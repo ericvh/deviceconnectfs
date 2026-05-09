@@ -121,8 +121,12 @@ func main() {
 	dataPath := filepath.Join(callDir, "data")
 	ctlPath := filepath.Join(callDir, "ctl")
 	writeAll(dataPath, "hello-deviceconnectfs\n")
-	writeAll(ctlPath, "call\n")
+	// Server removes the call directory when the last ctl fid is clunked; read data first.
+	ctl := openCtl(ctlPath)
+	_, err := io.WriteString(ctl, "call\n")
+	must(err, "ctl call")
 	mustContains(readTrim(dataPath), "hello-deviceconnectfs", "echo call response")
+	must(ctl.Close(), "close ctl after echo read")
 
 	// Allocate a second call and verify that closing the last ctl reference removes it.
 	gcID := readTrim(filepath.Join(echoFn, "clone"))
