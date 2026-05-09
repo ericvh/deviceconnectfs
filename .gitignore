@@ -1,0 +1,5 @@
+/go9p-deviceconnectfs
+/kernel9p-deviceconnectfs-e2e
+*.test
+*.out
+.DS_Store
