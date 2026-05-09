@@ -32,7 +32,8 @@ cd /opt/v9fs/uimage-deviceconnectfs
 rm -f go.work go.work.sum "${INITRD}" || true
 go work init "${UROOT_DIR}"
 
-GOWORK=/opt/v9fs/uimage-deviceconnectfs/go.work /opt/v9fs/go/bin/u-root   -o "${INITRD}"   -files /opt/v9fs/deviceconnectfs/scripts/v9fs/guest-e2e-deviceconnectfs.sh:guest-e2e-deviceconnectfs.sh   -initcmd=/bbin/init   -uinitcmd="/bbin/gosh -c "mkdir -p /mnt/9; mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 hostshare /mnt/9; KERNEL9P_TCP_ADDR=10.0.2.2 KERNEL9P_TCP_PORT=${DEVICECONNECTFS_PORT} chroot /mnt/9 /bin/bash /opt/v9fs/deviceconnectfs/scripts/v9fs/guest-e2e-deviceconnectfs.sh; shutdown -h now""   github.com/u-root/u-root/cmds/core/{init,gosh,mount,chroot,shutdown,poweroff,mkdir}
+UINIT_CMD="/bbin/gosh -c \"mkdir -p /mnt/9; mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 hostshare /mnt/9; KERNEL9P_TCP_ADDR=10.0.2.2 KERNEL9P_TCP_PORT=${DEVICECONNECTFS_PORT} chroot /mnt/9 /bin/bash /opt/v9fs/deviceconnectfs/scripts/v9fs/guest-e2e-deviceconnectfs.sh; shutdown -h now\""
+GOWORK=/opt/v9fs/uimage-deviceconnectfs/go.work /opt/v9fs/go/bin/u-root   -o "${INITRD}"   -files /opt/v9fs/deviceconnectfs/scripts/v9fs/guest-e2e-deviceconnectfs.sh:guest-e2e-deviceconnectfs.sh   -initcmd=/bbin/init   -uinitcmd="${UINIT_CMD}"   github.com/u-root/u-root/cmds/core/{init,gosh,mount,chroot,shutdown,poweroff,mkdir}
 
 echo "[host] starting go9p-deviceconnectfs server on :${DEVICECONNECTFS_PORT}"
 "${BIN_DIR}/go9p-deviceconnectfs" -addr "0.0.0.0:${DEVICECONNECTFS_PORT}" >/dev/null 2>&1 &
